@@ -1,0 +1,239 @@
+@font-face {
+    font-family: 'MTSTextBlack';
+    src: url('MTSText-Black.eot');
+    src: url('MTSText-Black.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+.custom-file-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #3b7ddd;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+body {
+    vertical-align: baseline;
+    font-family: "Roboto Regular", arial, helvetica, tahoma, sans-serif, "Arial Narrow", Arial, sans-serif;
+    background: no-repeat #1c1c1e;
+    line-height: 20px;
+    /*color: #b8b8a2;*/
+    height: 100%;
+    position: relative;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 12px;
+}
+
+.secondary_items__header {
+    font-family: 'MTSTextBlack';
+    font-size: 25px;
+    font-style: normal;
+    line-height: 110%;
+    text-transform: uppercase;
+    color: #f9f5e1;
+    margin-bottom: 8px;
+}
+
+.secondary_items__description {
+    font-family: 'MTSTextBlack';
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 130%;
+    color: #f9f5e1;
+    margin-bottom: 8px;
+}
+
+#drop_zone {
+    background: #bebebe;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 15vw 20px 15vw;
+    display: flex;
+    flex-direction: column;
+    height: 230px;
+    position: relative;
+}
+#drop_zone.expanded {
+    height: auto; /* когда файлов больше 2 — высота по содержимому */
+}
+#drop_zone > label {
+    margin-top: auto;
+}
+
+@media (min-width: 600px) {
+    #drop_zone {
+        width: 500px;
+        margin: 0 auto;
+        padding: 0;
+    }
+}
+
+#fileList {
+    list-style: none;
+    margin-top: 16px;
+    padding: 0 10px;
+    overflow: visible;
+    max-height: none;
+}
+
+#uploadForm {
+    display: flex;
+    /*flex-direction: column;*/
+    overflow: visible;
+    /*flex: 1;*/
+    margin-bottom: 40px;
+    /*position: relative;*/
+}
+
+.button-main {
+    display: block;
+    height: 50px;
+    width: 100%;
+    margin: 16px 0 0 0;
+    cursor: pointer;
+    font-family: "MTSTextBlack";
+    text-decoration: none;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
+    background: #e63200;
+    box-shadow: inset 0 2px 2px -2px rgba(255, 255, 255, .35);
+    color: #000;
+    font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: 200;
+    line-height: 50px;
+    padding: 0 40px;
+    position: relative;
+    text-align: center;
+    transition: background .15s ease-in-out;
+}
+
+.field-comment_drag-area {
+    position: absolute;
+    padding-left:20px;
+    padding-top: 20px;
+    width: 100%;
+    bottom: 10px;
+    color: #000;
+    cursor: pointer;
+    font-size: 14px;
+    background: none;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.file-item {
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 90px;
+    padding-left:10px;
+    width: calc(70%);
+    margin-bottom: 12px;
+    background: #f0f0f0;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.progress-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 0%;
+    background-color: #e63200;
+    transition: width 0.2s ease;
+}
+
+/* Кнопка удаления */
+.remove-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background-color: #28a745;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.remove-btn::before {
+    content: "✔";
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    text-align: center;
+    line-height: 24px;
+}
+
+.remove-btn:hover {
+    background-color: #666;
+}
+
+.remove-btn:hover::before {
+    content: "✖";
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+main {
+    flex: 1; /* растягивает контент так, чтобы футер ушёл вниз */
+}
+
+.page-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+
+footer {
+    background: rgba(0, 0, 0, .35);
+}
+
+
+
+@media (min-width: 600px) {
+    .button-main {
+        width: auto;
+        margin: 16px 0 0 0;
+        align-self: flex-start;
+    }
+
+    .form-wrapper {
+        width: 500px;
+        margin: 0 auto;
+        align-items: flex-start;
+    }
+}

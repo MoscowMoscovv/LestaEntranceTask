@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p style="text-align: center;" class="secondary_items__description">Рассчет TF-IDF для слов, содержащихся в .txt</p>
+
+    <div class="form-wrapper">
+        <div id="drop_zone">
+            <form method="POST" id="uploadForm" enctype="multipart/form-data">
+                {% csrf_token %}
+{#                <p style="color: #2f2f2f; padding-left: 20px">Перенесите файлы сюда</p>#}
+                <input style="display: none" type="file" id="fileElem" name="files" multiple>
+                <ul id="fileList"></ul>
+                <label for="fileElem" class="field-comment_drag-area">Выбрать файл</label>
+            </form>
+        </div>
+        <button class="button-main" type="submit">Отправить</button>
+    </div>
+    <script>
+        const dropArea = document.getElementById('drop_zone');
+        const fileInput = document.getElementById('fileElem');
+        const fileList = document.getElementById('fileList');
+        const form = document.getElementById('uploadForm');
+
+        let filesToUpload = [];
+
+        // Блокируем поведение по умолчанию
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        // Обработка drop
+        dropArea.addEventListener('drop', e => {
+            const files = [...e.dataTransfer.files];
+            addFiles(files);
+        });
+
+        // Обработка input
+        fileInput.addEventListener('change', e => {
+            const files = [...e.target.files];
+            addFiles(files);
+        });
+
+
+        function updateFormData() {
+            const dataTransfer = new DataTransfer();
+            filesToUpload.forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+        }
+
+        function truncateFilename(filename, maxLength = 25) {
+            if (filename.length <= maxLength) return filename;
+
+            const dotIndex = filename.lastIndexOf('.');
+            const ext = filename.slice(dotIndex); // .png
+            const name = filename.slice(0, dotIndex);
+
+            const startLength = 8;
+            const endLength = 3;
+
+            const start = name.slice(0, startLength);
+            const end = name.slice(-endLength);
+
+            return `${start}...${end}${ext}`;
+        }
+
+
+        function addFiles(files) {
+            files.forEach(file => {
+                filesToUpload.push(file);
+
+                const li = document.createElement('li');
+                li.className = 'file-item';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'file-name';
+                nameDiv.textContent = truncateFilename(file.name);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn hidden';
+                removeBtn.onclick = () => {
+                    filesToUpload = filesToUpload.filter(f => f !== file);
+                    li.remove();
+                    updateFormData();
+                };
+
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+
+                li.appendChild(nameDiv);
+                li.appendChild(removeBtn);
+                li.appendChild(progressBar);
+                fileList.appendChild(li);
+
+                simulateProgress(progressBar, removeBtn);
+            });
+
+            updateFormData();
+            const fileCount = fileList.children.length;
+
+            if (fileCount > 2) {
+                dropArea.classList.add('expanded');
+            } else {
+                dropArea.classList.remove('expanded');
+            }
+        }
+
+
+        function simulateProgress(bar, button) {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 8;
+                bar.style.width = Math.min(progress, 100) + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    bar.style.width = '100%';
+                    button.classList.remove('hidden');
+                }
+            }, 100);
+        }
+
+
+    </script>
+{% endblock %}
