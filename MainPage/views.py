@@ -1,22 +1,20 @@
-from django.core.files.storage import default_storage
-from django.http import HttpResponseRedirect
+import logging
+logger = logging.getLogger(__name__)
+
 from django.shortcuts import render
-from .forms import UploadFileForm
-
-#from somewhere import handle_uploaded_file
-
+from .models import UploadedFiles
+from .txtProcess import process_uploaded_files
 
 def mainPage(request):
     if request.method == 'POST':
-        uploaded_files = request.FILES.getlist('files')  # name="files" в input
-
-        saved_files = []
+        uploaded_files = request.FILES.getlist('files')
 
         for file in uploaded_files:
-            filename = default_storage.save(file.name, file)  # сохраняем
-            saved_files.append(filename)
+            UploadedFiles.objects.create(file=file)
+            logger.warning(f' [INFO] Uploaded {file.name}')
+            process_uploaded_files()
 
-        # Можно передать список файлов обратно в шаблон
-        #return render(request, 'MainPage.html', {'saved_files': saved_files})
+            return render(request, 'MainPage.html')
+
 
     return render(request, "MainPage.html")

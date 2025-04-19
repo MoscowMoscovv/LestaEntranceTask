@@ -6,7 +6,6 @@
     font-style: normal;
 }
 
-
 .custom-file-button {
     display: inline-block;
     padding: 8px 16px;
@@ -23,7 +22,7 @@ body {
     font-family: "Roboto Regular", arial, helvetica, tahoma, sans-serif, "Arial Narrow", Arial, sans-serif;
     background: no-repeat #1c1c1e;
     line-height: 20px;
-    /*color: #b8b8a2;*/
+    color: #f9f5e1;
     height: 100%;
     position: relative;
     -webkit-text-size-adjust: 100%;
@@ -155,6 +154,7 @@ body {
 }
 
 .file-name {
+    color: #2f2f2f;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

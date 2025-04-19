@@ -7,13 +7,56 @@
         <div id="drop_zone">
             <form method="POST" id="uploadForm" enctype="multipart/form-data">
                 {% csrf_token %}
-{#                <p style="color: #2f2f2f; padding-left: 20px">Перенесите файлы сюда</p>#}
-                <input style="display: none" type="file" id="fileElem" name="files" multiple>
+                <input style="display: none" type="file" accept="text/plain" id="fileElem" name="files" multiple>
                 <ul id="fileList"></ul>
-                <label for="fileElem" class="field-comment_drag-area">Выбрать файл</label>
+                <label for="fileElem" id="drop_zone_footer_label" class="field-comment_drag-area">Выбрать файл</label>
             </form>
         </div>
-        <button class="button-main" type="submit">Отправить</button>
+        <button class="button-main" type="submit" form="uploadForm">Отправить</button>
+    </div>
+    <div id="results">
+        {% if results %}
+            <h2>TF (Term Frequency)</h2>
+            {% for file_tf in results %}
+                <h3>Документ {{ forloop.counter }}</h3>
+                <table border="1">
+                    <thead>
+                    <tr>
+                        <th>Слово</th>
+                        <th>Частота</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for word, freq in file_tf.items %}
+                        <tr>
+                            <td>{{ word }}</td>
+                            <td>{{ freq|floatformat:4 }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+
+            <hr>
+
+            <h2>IDF (Inverse Document Frequency)</h2>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>Слово</th>
+                    <th>IDF</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for word, idf_value in idf.items %}
+                    <tr>
+                        <td>{{ word }}</td>
+                        <td>{{ idf_value|floatformat:4 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     </div>
     <script>
         const dropArea = document.getElementById('drop_zone');
@@ -34,7 +77,20 @@
         // Обработка drop
         dropArea.addEventListener('drop', e => {
             const files = [...e.dataTransfer.files];
-            addFiles(files);
+            let txts = [];
+            files.forEach(file => {
+                if (file.type == 'text/plain') {
+                    txts.push(file);
+                }
+            })
+            if (txts.length == 0) {
+                document.getElementById('drop_zone_footer_label').innerText = "Nuh-uh, только txt-шники";
+                setTimeout(()=>{
+                    document.getElementById('drop_zone_footer_label').innerText = "Выберите файл";
+                },1000);
+            } else {
+                addFiles(txts);
+            }
         });
 
         // Обработка input
@@ -111,7 +167,7 @@
         function simulateProgress(bar, button) {
             let progress = 0;
             const interval = setInterval(() => {
-                progress += Math.random() * 8;
+                progress += 20;
                 bar.style.width = Math.min(progress, 100) + '%';
 
                 if (progress >= 100) {
