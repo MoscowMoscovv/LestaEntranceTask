@@ -172,9 +172,6 @@ body {
 
 /* Кнопка удаления */
 .remove-btn {
-    position: absolute;
-    right: 10px;
-    top: 10px;
     width: 24px;
     height: 24px;
     border: none;
@@ -182,6 +179,12 @@ body {
     background-color: #28a745;
     cursor: pointer;
     transition: background-color 0.2s ease;
+}
+
+li .remove-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
 }
 
 .remove-btn::before {

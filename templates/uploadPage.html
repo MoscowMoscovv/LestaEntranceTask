@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
     <p style="text-align: center;" class="secondary_items__description">Рассчет TF-IDF для слов, содержащихся в .txt</p>
 
@@ -13,51 +12,35 @@
             </form>
         </div>
         <button class="button-main" type="submit" form="uploadForm">Отправить</button>
-    </div>
-    <div id="results">
-        {% if results %}
-            <h2>TF (Term Frequency)</h2>
-            {% for file_tf in results %}
-                <h3>Документ {{ forloop.counter }}</h3>
-                <table border="1">
+        <!--- таблица выгруженных файлов, если они уже есть в бд --->
+        <div id="uploaded_files_table_wrapper" style="padding-top: 20px ">
+
+            {% if uploaded %}
+                <p class="secondary_items__header">Выгруженные файлы</p>
+                <table border="1" style=" margin-top: 20px;  font-size: 18px ; min-width: 400px">
                     <thead>
                     <tr>
-                        <th>Слово</th>
-                        <th>Частота</th>
+                        <th>Имя файла</th>
+                        <th>Удалить</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for word, freq in file_tf.items %}
+                    {% for file in uploaded %}
                         <tr>
-                            <td>{{ word }}</td>
-                            <td>{{ freq|floatformat:4 }}</td>
+                            <td>{{ file.file.name }}</td>
+                            <td>
+                                {#TODO: сделать кнопку рабочей#}
+                                <button class="remove-btn" , onclick="deleteFile({{ file.id }})"></button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-            {% endfor %}
-
-            <hr>
-
-            <h2>IDF (Inverse Document Frequency)</h2>
-            <table border="1">
-                <thead>
-                <tr>
-                    <th>Слово</th>
-                    <th>IDF</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for word, idf_value in idf.items %}
-                    <tr>
-                        <td>{{ word }}</td>
-                        <td>{{ idf_value|floatformat:4 }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+                <a href="results" class="button-main">Результат</a>
+            {% endif %}
+        </div>
     </div>
+
     <script>
         const dropArea = document.getElementById('drop_zone');
         const fileInput = document.getElementById('fileElem');
@@ -85,9 +68,9 @@
             })
             if (txts.length == 0) {
                 document.getElementById('drop_zone_footer_label').innerText = "Nuh-uh, только txt-шники";
-                setTimeout(()=>{
+                setTimeout(() => {
                     document.getElementById('drop_zone_footer_label').innerText = "Выберите файл";
-                },1000);
+                }, 1000);
             } else {
                 addFiles(txts);
             }
@@ -125,6 +108,25 @@
 
         function addFiles(files) {
             files.forEach(file => {
+                const isDuplicateInQueue = filesToUpload.some(f => f.name === file.name);
+                const existingFiles = Array.from(document.querySelectorAll('#uploaded_files_table_wrapper tbody td:first-child'));
+                const isDuplicateInTable = existingFiles.some(td => td.textContent.includes(file.name));
+
+                if (isDuplicateInTable) {
+                    document.getElementById('drop_zone_footer_label').innerText = "Такой файл уже есть в выгруженных"
+                    setTimeout(() => {
+                        document.getElementById('drop_zone_footer_label').innerText = "Выберите файл";
+                    }, 1000);
+                    return;
+                }
+                if (isDuplicateInQueue) {
+                    document.getElementById('drop_zone_footer_label').innerText = "Вы пытаетесь выгрузить два одинаковых файла"
+                    setTimeout(() => {
+                        document.getElementById('drop_zone_footer_label').innerText = "Выберите файл";
+                    }, 1000);
+                    return;
+                }
+
                 filesToUpload.push(file);
 
                 const li = document.createElement('li');
@@ -176,6 +178,26 @@
                     button.classList.remove('hidden');
                 }
             }, 100);
+        }
+
+        function deleteFile(fileId) {
+            if (confirm('Вы уверены, что хотите удалить этот файл?')) {
+                fetch(`/delete-file/${fileId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Удаляем строку из таблицы
+                            document.getElementById(`file-row-${fileId}`).remove();
+                        } else {
+                            alert('Ошибка при удалении файла');
+                        }
+                    })
+            }
         }
 
 
